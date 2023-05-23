@@ -1,1 +1,14 @@
 
+!pip3 install -q jupyter biopython
+!pip install -q nglview
+
+
+# logomaker
+!pip install logomaker
+
+# pysam
+!pip install pysam
+
+
+# squarify
+!pip install squarify
