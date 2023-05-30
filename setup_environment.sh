@@ -21,7 +21,7 @@ pip install weblogo
 
 # Install Bowtie2
 dpath_bowtie2="$dpath_tools/bowtie2-2.4.2-sra-linux-x86_64"
-if [ ! -d "$DPATH_bowtie2" ]; then
+if [ ! -d "$dpath_bowtie2" ]; then
   cd /content
   url_download="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.4.2/bowtie2-2.4.2-sra-linux-x86_64.zip/download"
   wget -nc "$url_download"
@@ -29,48 +29,48 @@ if [ ! -d "$DPATH_bowtie2" ]; then
 fi
 
 # Install NGmerge
-dpath_NGmerge="$dpath_tools/NGmerge"
+dpath_ngmerge="$dpath_tools/NGmerge"
 if [ ! -d "$dpath_tools/NGmerge" ]; then
   git clone https://github.com/harvardinformatics/NGmerge.git -C "$dpath_tools"
 fi
-cd "$DPATH_NGmerge"
+cd "$dpath_ngmerge"
 make
 
 # Install Fastq-join
-DPATH_fastqjoin="$DPATH_TOOLS/fastq-join"
+dpath_fastqjoin="$dpath_tools/fastq-join"
 
-if [ ! -d "$DPATH_fastqjoin" ]; then
-  git clone https://github.com/brwnj/fastq-join "$DPATH_fastqjoin"
+if [ ! -d "$dpath_fastqjoin" ]; then
+  git clone https://github.com/brwnj/fastq-join "$dpath_fastqjoin"
 fi
-cd "$DPATH_fastqjoin"
+cd "$dpath_fastqjoin"
 make
 
 # Install samtools
-DPATH_samtools="$DPATH_TOOLS/samtools-1.17"
+dpath_samtools="$dpath_tools/samtools-1.17"
 
-if [ ! -d "$DPATH_samtools" ]; then
+if [ ! -d "$dpath_samtools" ]; then
   cd /content
   url_download='https://github.com/samtools/samtools/releases/download/1.17/samtools-1.17.tar.bz2'
   wget -wc "$url_download"
-  tar -xjf "/content/samtools-1.17.tar.bz2" -C "$DPATH_TOOLS"
+  tar -xjf "/content/samtools-1.17.tar.bz2" -C "$dpath_tools"
 fi
 
-cd "$DPATH_samtools"
+cd "$dpath_samtools"
 ./configure
 make -s
 make -s install
 
 # Install clustal
-DPATH_clustalw="$DPATH_TOOLS/clustalw-2.1"
+dpath_clustalw="$dpath_tools/clustalw-2.1"
 
-if [ ! -d "$DPATH_clustalw" ]; then
+if [ ! -d "$dpath_clustalw" ]; then
   cd /content
   url_download='http://www.clustal.org/download/current/clustalw-2.1.tar.gz'
   wget "$url_download"
-  tar -xzf "/content/clustalw-2.1.tar.gz" -C "$DPATH_TOOLS"
+  tar -xzf "/content/clustalw-2.1.tar.gz" -C "$dpath_tools"
 fi
 
-cd "$DPATH_clustalw"
+cd "$dpath_clustalw"
 ./configure
 make
 make install
