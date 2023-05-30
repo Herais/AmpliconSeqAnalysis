@@ -1,5 +1,7 @@
+#!/bin/bash
+
 # Define Path for colab
-DPATH_TOOLS = $1
+DPATH_TOOLS = "$1"
 echo $DPATH_TOOLS
 
 # Biopython
