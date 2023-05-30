@@ -1,8 +1,8 @@
 #!/bin/bash
 
 # Define Path for colab
-DPATH_tools = "$1"
-echo "$DPATH_tools"
+dpath_tools = "$1"
+echo "$dpath_tools"
 
 # Biopython
 pip3 install -q jupyter biopython
@@ -22,18 +22,18 @@ pip install weblogo
 
 
 # Install Bowtie2
-DPATH_bowtie2="$DPATH_TOOLS/bowtie2-2.4.2-sra-linux-x86_64"
+dpath_bowtie2="$dpath_tools/bowtie2-2.4.2-sra-linux-x86_64"
 if [ ! -d "$DPATH_bowtie2" ]; then
   cd /content
   url_download="https://sourceforge.net/projects/bowtie-bio/files/bowtie2/2.4.2/bowtie2-2.4.2-sra-linux-x86_64.zip/download"
   wget -nc "$url_download"
-  unzip -q -o download -d "$DPATH_TOOLS"
+  unzip -q -o download -d "$dpath_tools"
 fi
 
 # Install NGmerge
-DPATH_NGmerge="$DPATH_TOOLS/NGmerge"
-if [ ! -d "$DPATH_TOOLS/NGmerge" ]; then
-  git clone https://github.com/harvardinformatics/NGmerge.git -C "$DPATH_TOOLS"
+dpath_NGmerge="$dpath_tools/NGmerge"
+if [ ! -d "$dpath_tools/NGmerge" ]; then
+  git clone https://github.com/harvardinformatics/NGmerge.git -C "$dpath_tools"
 fi
 cd "$DPATH_NGmerge"
 make
