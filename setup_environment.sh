@@ -2,7 +2,7 @@
 
 # Define Path for colab
 dpath_tools = "$1"
-echo "$dpath_tools"
+echo "$DPATH_tools"
 
 # Biopython
 pip3 install -q jupyter biopython
