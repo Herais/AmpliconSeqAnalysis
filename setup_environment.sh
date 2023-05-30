@@ -1,5 +1,5 @@
 # Define Path for colab
-DPATH_TOOLS = "/content/tools"
+DPATH_TOOLS = '/content/drive/MyDrive/CCSF/tools'
 
 # Biopython
 pip3 install -q jupyter biopython
