@@ -1,4 +1,4 @@
-#!/bin/bash
+!/bin/bash
 
 # Define Path for colab
 dpath_tools = "$1"
