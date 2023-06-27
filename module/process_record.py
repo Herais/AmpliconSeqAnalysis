@@ -39,10 +39,12 @@ class Process_Record(object):
             error = completed_process.stderr
 
             # Process the output or error messages as needed
-            print("Output:")
-            print(output)
-            print("Error:")
-            print(error)
+            if output:
+                print("Output:")
+                print(output)
+            if error:
+                print("Error:")
+                print(error)
 
         except subprocess.CalledProcessError as e:
             print(f"An error occurred: {e}")
