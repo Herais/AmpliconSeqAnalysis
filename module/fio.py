@@ -98,7 +98,7 @@ class fio(object):
         for fn in filenames:
             fp = "{}/{}/00_fastq/{}".format(dirpath_source, batch_id, fn.rstrip('.gz'))
             if re.search('.gz', fn):
-                io.decompress_file(fp + '.gz', fp)
+                fio.decompress_file(fp + '.gz', fp)
 
             if re.search('.fastq', fn):
                 # name_lib
