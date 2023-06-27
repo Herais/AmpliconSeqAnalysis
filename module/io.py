@@ -5,6 +5,8 @@ from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
 from Bio.Align.Applications import ClustalwCommandline
 from Bio import motifs
+import gzip
+import shutil
 
 class io(object):
  
@@ -16,6 +18,12 @@ class io(object):
             radiu
         """
         super(io, self).__init__()
+
+    @staticmethod
+    def decompress_file(input_file, output_file):
+        with gzip.open(input_file, 'rb') as gz_file:
+            with open(output_file, 'wb') as output:
+                shutil.copyfileobj(gz_file, output)
 
     @staticmethod
     def process_fastq_lines(lines=None):
@@ -88,7 +96,7 @@ class io(object):
         for fn in filenames:
             fp = "{}/{}/00_fastq/{}".format(DPATH_NGS, batch_id, fn.rstrip('.gz'))
             if re.search('.gz', fn):
-                !gzip -d $fp
+                io.decompress_file(fp + '.gz', fp)
 
             if re.search('.fastq', fn):
                 # name_lib
