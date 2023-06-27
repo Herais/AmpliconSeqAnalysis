@@ -5,6 +5,8 @@ from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
 from Bio.Align.Applications import ClustalwCommandline
 from Bio import motifs
+import pandas as pd
+import numpy as np
 import os
 import gzip
 import shutil
