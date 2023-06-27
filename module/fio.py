@@ -54,7 +54,7 @@ class fio(object):
         
         df = pd.DataFrame(records)
         df['len_nt'] = df['sequence'].apply(len)
-        df['P_error'] = df['quality'].apply(Process_Record.convert_quality_to_probabilityoferror)
+        df['P_error'] = df['quality'].apply(Process_Record.convert_quality_to_probability_of_error)
         df['P_error_mean'] = df['P_error'].apply(np.mean)
         df['name'] = df['name'].apply(lambda x: x.lstrip('@'))
         
