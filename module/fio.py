@@ -8,7 +8,7 @@ from Bio import motifs
 import gzip
 import shutil
 
-class io(object):
+class fio(object):
  
     def __init__(self, size:int=20):
         """
