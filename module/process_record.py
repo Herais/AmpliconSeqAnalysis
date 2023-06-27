@@ -25,7 +25,7 @@ from fio import fio
 
 class Process_Record(object):
  
-    def __init__(self, size:int=20):
+    def __init__(self):
         """
         Parameters
         ----------
