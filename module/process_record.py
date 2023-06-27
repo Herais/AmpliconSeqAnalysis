@@ -56,6 +56,33 @@ class Process_Record(object):
             print(f"An error occurred: {e}")
 
     @staticmethod
+    def process_fastq_to_df(path_fastq:str):
+        records = []
+        n = 4
+        with open(path_fastq, 'r') as fh:
+            lines = []
+            for line in fh:
+                lines.append(line.rstrip())
+                if len(lines) == n:
+                    record = fio.process_fastq_lines(lines)
+                    #sys.stderr.write("Record: %s\n" % (str(record)))
+                    lines = []
+                    records.append(record)
+        fh.close()
+        
+        df = pd.DataFrame(records)
+        df['len_nt'] = df['sequence'].apply(len)
+        df['P_error'] = df['quality'].apply(Process_Record.convert_quality_to_probability_of_error)
+        df['P_error_mean'] = df['P_error'].apply(np.mean)
+        df['name'] = df['name'].apply(lambda x: x.lstrip('@'))
+        
+
+        cols_ordered = ['name', 'sequence', 'len_nt', 'P_error_mean', 'P_error', 'optional', 'quality']
+        df = df[cols_ordered]
+
+        return df.copy()
+
+    @staticmethod
     def convert_quality_to_probability_of_error(quality:str):
         # gives a list of probabilty of error
         # 0.05 means a 5% chance that the base is called erroneously
