@@ -8,6 +8,7 @@ from Bio import AlignIO
 from Bio.Align.Applications import ClustalwCommandline
 from Bio import motifs
 import subprocess
+import pickle
 
 DPATH_TOOLS = "/content/tools"
 DPATH_bowtie2 = f"{DPATH_TOOLS}/bowtie2-2.4.2-sra-linux-x86_64"
@@ -222,8 +223,8 @@ class Process_Record(object):
             f.close()
 
         if savepickle:
-        with open(ret['fp_pickle'], 'wb') as f:
-            pickle.dump(ret, f)
-        f.close()
+            with open(ret['fp_pickle'], 'wb') as f:
+                pickle.dump(ret, f)
+            f.close()
 
         return ret
