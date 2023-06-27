@@ -8,6 +8,7 @@ from Bio import motifs
 import os
 import gzip
 import shutil
+import re
 
 class fio(object):
  
