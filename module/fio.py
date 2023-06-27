@@ -95,7 +95,7 @@ class fio(object):
 
         name2fp = {}
         for fn in filenames:
-            fp = "{}/{}/00_fastq/{}".format(DPATH_NGS, batch_id, fn.rstrip('.gz'))
+            fp = "{}/{}/00_fastq/{}".format(dirpath_source, batch_id, fn.rstrip('.gz'))
             if re.search('.gz', fn):
                 io.decompress_file(fp + '.gz', fp)
 
@@ -119,7 +119,7 @@ class fio(object):
 
             ls = ['fastq', 'unstitched', 'adapter', 'log', 'stats']
             for item in ls:
-                fp = "{}/{}/00_fastq/{}_{}_{}".format(DPATH_NGS, batch_id, name_ngs, 'Nmerge', item)
+                fp = "{}/{}/00_fastq/{}_{}_{}".format(dirpath_source, batch_id, name_ngs, 'Nmerge', item)
                 name2fp[name_ngs]['Nmerge'][item] = fp
 
         return name2fp
