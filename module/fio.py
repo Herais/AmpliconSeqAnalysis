@@ -118,7 +118,7 @@ class fio(object):
             # fp Nmerge
             name2fp[name_ngs]['Nmerge'] = {}
 
-            ls = ['fastq', 'unstitched', 'adapter', 'log', 'stats']
+            ls = ['fastq', 'unstitched', 'adapter', 'log', 'stats', 'pkl']
             for item in ls:
                 fp = "{}/{}/00_fastq/{}_{}_{}".format(dirpath_source, batch_id, name_ngs, 'Nmerge', item)
                 name2fp[name_ngs]['Nmerge'][item] = fp
