@@ -10,6 +10,9 @@ from Bio import motifs
 import subprocess
 import pickle
 
+# load local variables
+from fio import fio
+
 DPATH_TOOLS = "/content/tools"
 DPATH_bowtie2 = f"{DPATH_TOOLS}/bowtie2-2.4.2-sra-linux-x86_64"
 DPATH_NGmerge=f"{DPATH_TOOLS}/NGmerge"
@@ -135,15 +138,14 @@ class Process_Record(object):
         shell_code += '-d '
         Process_Record.execute_shell_code(code=shell_code)
 
-        
         ret['stats'] = ''
         # df_R1
-        df_R1 = process_fastq_to_df(fp_R1)
+        df_R1 = fio.process_fastq_to_df(fp_R1)
         num_all_reads = df_R1.shape[0]
         del df_R1
 
         # df_R1R2_stitched
-        ret['stitched'] = process_fastq_to_df(fp_stitched)
+        ret['stitched'] = fio.process_fastq_to_df(fp_stitched)
 
         ret['stats'] += 'stitched R1R2 / All Read Pairs = {}/{} = {}'.format(
                             ret['stitched'].shape[0],
