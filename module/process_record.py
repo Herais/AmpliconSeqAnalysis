@@ -7,6 +7,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
 from Bio.Align.Applications import ClustalwCommandline
 from Bio import motifs
+import subprocess
 
 DPATH_TOOLS = "/content/tools"
 DPATH_bowtie2 = f"{DPATH_TOOLS}/bowtie2-2.4.2-sra-linux-x86_64"
@@ -25,6 +26,25 @@ class Process_Record(object):
             radiu
         """
         super(Process_Record, self).__init__()
+
+    @staticmethod
+    def execute_shell_code(code):
+        try:
+            completed_process = subprocess.run(code, shell=True, check=True,
+                                            stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                                            universal_newlines=True)
+            # Get the output and error messages
+            output = completed_process.stdout
+            error = completed_process.stderr
+
+            # Process the output or error messages as needed
+            print("Output:")
+            print(output)
+            print("Error:")
+            print(error)
+
+        except subprocess.CalledProcessError as e:
+            print(f"An error occurred: {e}")
 
     @staticmethod
     def convert_quality_to_probability_of_error(quality:str):
@@ -100,15 +120,17 @@ class Process_Record(object):
         ret['fp_stats'] = fp_stats
         ret['fp_pickle'] = fp_stitched.replace('.fastq', '_dict.pkl')
 
-        !$DPATH_NGmerge{'/NGmerge'} \
-        -1 $fp_R1 \
-        -2 $fp_R2 \
-        -o $fp_stitched \
-        -f $fp_unstitched \
-        -c $fp_adapter \
-        -l $fp_R1R2_log \
-        -g \
-        -d 
+        str_command_NGmerge = "{}/NGmerge".format(DPATH_NGmerge)
+        shell_code = str_command_NGmerge + ' '
+        shell_code += '-1 {} '.format(fp_R1)
+        shell_code += '-2 {} '.format(fp_R2)
+        shell_code += '-o {} '.format(fp_stitched)
+        shell_code += '-f {} '.format(fp_unstitched)
+        shell_code += '-c {} '.format(fp_adapter)
+        shell_code += '-l {} '.format(fp_R1R2_log)
+        shell_code += '-g '
+        shell_code += '-d '
+        Process_Record.execute_shell_code(code=shell_code)
 
         
         ret['stats'] = ''
