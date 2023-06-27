@@ -10,6 +10,9 @@ import gzip
 import shutil
 import re
 
+# local imports
+from process_record import Process_Record
+
 class fio(object):
  
     def __init__(self, size:int=20):
@@ -41,7 +44,7 @@ class fio(object):
             for line in fh:
                 lines.append(line.rstrip())
                 if len(lines) == n:
-                    record = process_fastq_lines(lines)
+                    record = fio.process_fastq_lines(lines)
                     #sys.stderr.write("Record: %s\n" % (str(record)))
                     lines = []
                     records.append(record)
@@ -49,7 +52,7 @@ class fio(object):
         
         df = pd.DataFrame(records)
         df['len_nt'] = df['sequence'].apply(len)
-        df['P_error'] = df['quality'].apply(convert_quality_to_probabilityoferror)
+        df['P_error'] = df['quality'].apply(Process_Record.convert_quality_to_probabilityoferror)
         df['P_error_mean'] = df['P_error'].apply(np.mean)
         df['name'] = df['name'].apply(lambda x: x.lstrip('@'))
         
