@@ -10,8 +10,7 @@ from Bio import motifs
 import subprocess
 import pickle
 
-# load local variables
-from fio import fio
+
 
 DPATH_TOOLS = "/content/tools"
 DPATH_bowtie2 = f"{DPATH_TOOLS}/bowtie2-2.4.2-sra-linux-x86_64"
@@ -19,6 +18,10 @@ DPATH_NGmerge=f"{DPATH_TOOLS}/NGmerge"
 DPATH_fastqjoin=f"{DPATH_TOOLS}/fastq-join"
 DPATH_samtools=f"{DPATH_TOOLS}/samtools-1.17"
 DPATH_clustalw=f"{DPATH_TOOLS}/clustalw-2.1"
+
+
+# load local variables
+from fio import fio
 
 class Process_Record(object):
  

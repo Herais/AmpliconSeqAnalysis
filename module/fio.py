@@ -24,7 +24,7 @@ class fio(object):
         size : float
             radiu
         """
-        super(io, self).__init__()
+        super(fio, self).__init__()
 
     @staticmethod
     def decompress_file(input_file, output_file):
