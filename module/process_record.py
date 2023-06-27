@@ -170,12 +170,12 @@ class Process_Record(object):
 
         ret['stats'] = ''
         # df_R1
-        df_R1 = fio.process_fastq_to_df(fp_R1)
+        df_R1 = Process_Record.process_fastq_to_df(fp_R1)
         num_all_reads = df_R1.shape[0]
         del df_R1
 
         # df_R1R2_stitched
-        ret['stitched'] = fio.process_fastq_to_df(fp_stitched)
+        ret['stitched'] = Process_Record.process_fastq_to_df(fp_stitched)
 
         ret['stats'] += 'stitched R1R2 / All Read Pairs = {}/{} = {}'.format(
                             ret['stitched'].shape[0],
