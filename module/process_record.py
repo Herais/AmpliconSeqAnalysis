@@ -27,7 +27,7 @@ class Process_Record(object):
         super(Process_Record, self).__init__()
 
     @staticmethod
-    def convert_quality_to_probabilityoferror(quality:str):
+    def convert_quality_to_probability_of_error(quality:str):
         # gives a list of probabilty of error
         # 0.05 means a 5% chance that the base is called erroneously
         ls_qs = [10**((ord(q)-33)/-10) for q in list(quality)]
