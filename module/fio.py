@@ -5,6 +5,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
 from Bio.Align.Applications import ClustalwCommandline
 from Bio import motifs
+import os
 import gzip
 import shutil
 
