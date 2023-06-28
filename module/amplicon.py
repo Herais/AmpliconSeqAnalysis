@@ -320,7 +320,7 @@ class Amplicon(object):
 
         ret = Amplicon.get_df_amplicon_with_count(dfseq=ret_merged['seq'],
                                 primer_F5=primer_F5,
-                                primer_F3=primers_F3,
+                                primer_F3=primer_F3,
                                 )
         track_filters.extend(ret['filters'])
 
