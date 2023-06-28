@@ -280,3 +280,24 @@ class Process_Record(object):
             ls_seq.append(str(record.seq))
 
         return ls_seq
+
+    @staticmethod
+    def create_NC_linkage_patterns(dfref):
+        """
+        """
+        dfref = dfref.copy()
+
+        dfref['N_seqpat'] = dfref['seq_aa'].apply(lambda x: x[26:34])
+        dfref['C_seqpat'] = dfref['seq_aa'].apply(lambda x: x[-16-8:-16+1])
+
+        ls_N_terminus = dfref['N_seqpat'].unique()
+        ls_C_terminus = dfref['C_seqpat'].unique()
+
+        Npat2link = dfref[['CpxA N-term linkage', 'N_seqpat']].drop_duplicates()\
+                    .set_index('N_seqpat').to_dict()['CpxA N-term linkage']
+        Cpat2link = dfref[['CpxA C-term linkage', 'C_seqpat']].drop_duplicates()\
+                    .set_index('C_seqpat').to_dict()['CpxA C-term linkage']
+
+        dfref['NC_linkage'] = dfref[['N_seqpat', 'C_seqpat']].apply(lambda x: (x[0], x[1]), axis=1)
+
+        return dfref
