@@ -108,3 +108,85 @@ class Amplicon(object):
         print(ret['stats'])
 
         return ret
+    
+    @staticmethod
+    def bracket_by_NC(
+            df, 
+            ls_N_terminus, 
+            ls_C_terminus
+        ):
+        """
+        """
+        
+        df = df.copy()
+
+        ret = {}
+        ret['filters'] = []
+
+        filter2stats = {}
+        filter2stats['description'] = 'NC linkage'
+        filter2stats['n_input'] = df['count'].sum()
+        filter2stats['n_input_unique'] = df.shape[0]
+
+        ret['stats'] = '-> Narrow down to sequences with NC linkages\n'
+        ret['stats'] += 'Input: # sequences {}, # unique {}\n'.format(
+            filter2stats['n_input'], filter2stats['n_input_unique'])
+
+        df = df[df.amplicon_aa.apply(lambda x: match_by_brackets(x, ls_N_terminus, ls_C_terminus))]
+        filter2stats['n_output'] = df['count'].sum()
+        filter2stats['n_output_unique'] = df.shape[0]
+        ret['stats'] += 'Output: # sequences {}, # unique {}\n'.format(
+            filter2stats['n_output'], filter2stats['n_output_unique'])
+
+        ret['filters'].append(filter2stats)
+
+        df['beg'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['beg'])
+        df['end'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['end']).copy()
+        df['seq_aa_NtoC'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['seq'])
+        df['Nterm'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket5'])
+        df['Cterm'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket3'])
+        df['CpxA N-term linkage'] = df['Nterm'].apply(lambda x: Npat2link[x])
+        df['CpxA C-term linkage'] = df['Cterm'].apply(lambda x: Cpat2link[x])
+
+        # with and without histidine
+        df['H'] = 1
+        df.loc[~df['amplicon_aa'].str.contains('H'), 'H'] = 0
+
+        ret['df'] = df.copy()
+        print(ret['stats'])
+
+        return ret
+    
+    @staticmethod
+    def assign_ref_id(
+            row, 
+            dfref
+        ):
+        """
+        """
+
+        cols = ['s#', 'CpxA N-term linkage', 'CpxA C-term linkage']
+        dfref_wH = dfref[:49][cols]
+        dfref_woH = dfref[49:-1][cols]
+        dfref_wt = dfref[-1:][cols]
+        Nt = row['CpxA N-term linkage']
+        Ct = row['CpxA C-term linkage']
+
+        if row['H']:
+            cols = ['CpxA N-term linkage', 'CpxA C-term linkage']
+            NC2sn_wH = dfref_wH.set_index(cols).to_dict()['s#']
+            NC2sn_wt = dfref_wt.set_index(cols).to_dict()['s#']
+            if (Nt, Ct) in NC2sn_wH:
+            return NC2sn_wH[(Nt, Ct)]
+            elif (Nt, Ct) in NC2sn_wt:
+            return NC2sn_wt[(Nt, Ct)]
+            else:
+            return -1
+        elif not row['H']:
+            cols = ['CpxA N-term linkage', 'CpxA C-term linkage']
+            NC2sn_woH = dfref_woH.set_index(cols).to_dict()['s#']
+            if (Nt, Ct) in NC2sn_woH:
+            return NC2sn_woH[(Nt, Ct)]
+            else:
+            return -2
+        return -3
