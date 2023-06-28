@@ -347,4 +347,4 @@ class Amplicon(object):
         df['len_seq_aa_NtoC'] = df['seq_aa_NtoC'].apply(len)
         df['len_amplicon_aa_adj'] = df['len_amplicon_aa'] +3-9 # NGS is 3 less at N, 9 more at
 
-        return df.copy()
+        return df.copy(), track_filters
