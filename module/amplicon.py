@@ -177,18 +177,18 @@ class Amplicon(object):
             NC2sn_wH = dfref_wH.set_index(cols).to_dict()['s#']
             NC2sn_wt = dfref_wt.set_index(cols).to_dict()['s#']
             if (Nt, Ct) in NC2sn_wH:
-            return NC2sn_wH[(Nt, Ct)]
+                return NC2sn_wH[(Nt, Ct)]
             elif (Nt, Ct) in NC2sn_wt:
-            return NC2sn_wt[(Nt, Ct)]
+                return NC2sn_wt[(Nt, Ct)]
             else:
-            return -1
+                return -1
         elif not row['H']:
             cols = ['CpxA N-term linkage', 'CpxA C-term linkage']
             NC2sn_woH = dfref_woH.set_index(cols).to_dict()['s#']
             if (Nt, Ct) in NC2sn_woH:
-            return NC2sn_woH[(Nt, Ct)]
+                return NC2sn_woH[(Nt, Ct)]
             else:
-            return -2
+                return -2
         return -3
     
     @staticmethod
