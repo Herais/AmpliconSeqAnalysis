@@ -262,3 +262,21 @@ class Process_Record(object):
             f.close()
 
         return ret
+
+    @staticmethod
+    def multialign_clustalw2(fp_fasta):
+        """
+        """
+        cmd = ClustalwCommandline(DPATH_clustalw +'/src/clustalw2' , infile=fp_fasta)
+        print(cmd)
+        stdout, stderr = cmd()
+        align = AlignIO.read(fp_fasta.replace('.fasta', '.aln'), "clustal")
+        alignment = AlignIO.read(open(fp_fasta.replace('.fasta', '.aln')), "clustal")
+        print("Alignment length %i" % alignment.get_alignment_length())
+        ls_seq = []
+
+        for record in alignment:
+            #print(record.seq + " " + record.id)
+            ls_seq.append(str(record.seq))
+
+        return ls_seq
