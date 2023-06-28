@@ -21,6 +21,56 @@ class Amplicon(object):
         super(Amplicon, self).__init__()
 
     @staticmethod
+    # Functions for sequence truncation
+    def clean_ends(
+            x, 
+            ls5, 
+            ls3, 
+            trunc3=False
+        ):
+        """
+        """
+        ret = {}
+        ret['seq'] = x
+        ret['beg'] = 0
+        ret['end'] = len(x)
+        ret['bracket5'] = ''
+        ret['bracket3'] = ''
+        for f5 in ls5:
+            search = re.search(f5, x)
+            if search:
+                ret['seq'] = x[search.span()[0]:]
+                ret['beg'] = search.span()[0]
+                ret['bracket5'] = f5
+            for f3 in ls3:
+                search = re.search(f3, x)
+                if search:
+                    ret['bracket3'] = f3
+                if search.span()[0] > ret['beg']:
+                    ret['seq'] = ret['seq'][:search.span()[1]+1]
+                    ret['end'] = search.span()[1]+1
+                if trunc3:
+                    ret['seq'] = ret['seq'][:len(ret['seq'])-len(ret['seq'])%3] # clean the ends to end in triplicates
+                    ret['end'] = len(ret['seq'])-len(ret['seq'])%3
+                #return ret
+        return ret
+
+    @staticmethod
+    def match_by_brackets(
+            x, 
+            ls5, 
+            ls3
+        ):
+        """
+        """
+        for f5 in ls5:
+            if re.search(f5, x):
+            for f3 in ls3:
+                if re.search(f3, x):
+                    return True
+        return False
+
+    @staticmethod
     def get_df_amplicon_with_count(
             dfseq, 
             primer_F5, 
