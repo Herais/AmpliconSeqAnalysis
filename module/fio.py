@@ -102,7 +102,7 @@ class fio(object):
                     fp = "{}/{}/00_fastq/{}_{}_{}".format(dirpath_source, batch_id, name_ngs, 'Nmerge', item)
                     if item == 'fastq': fp += '.fastq'
                     elif item == 'log': fp += '.log'
-                    elif item == 'pkl': fp += '.pkl'
+                    elif item == 'pkl': fp.rstrip('_pkl') += '_dict.pkl'
                     name2fp[name_ngs]['Nmerge'][item] = fp
 
         return name2fp
