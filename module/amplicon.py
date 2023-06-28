@@ -164,7 +164,8 @@ class Amplicon(object):
     def bracket_by_NC(
             df, 
             ls_N_terminus, 
-            ls_C_terminus
+            ls_C_terminus,
+            dfref,
         ):
         """
         """
@@ -196,6 +197,11 @@ class Amplicon(object):
         df['seq_aa_NtoC'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['seq'])
         df['Nterm'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket5'])
         df['Cterm'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket3'])
+        
+        dfref = Amplicon.assign_nc(dfref=dfref)
+        Npat2link = dfref[['CpxA N-term linkage', 'N_seqpat']].drop_duplicates().set_index('N_seqpat').to_dict()['CpxA N-term linkage']
+        Cpat2link = dfref[['CpxA C-term linkage', 'C_seqpat']].drop_duplicates().set_index('C_seqpat').to_dict()['CpxA C-term linkage']        
+        
         df['CpxA N-term linkage'] = df['Nterm'].apply(lambda x: Npat2link[x])
         df['CpxA C-term linkage'] = df['Cterm'].apply(lambda x: Cpat2link[x])
 
