@@ -5,6 +5,13 @@ from Bio.SeqRecord import SeqRecord
 from Bio import AlignIO
 from Bio.Align.Applications import ClustalwCommandline
 from Bio import motifs
+
+import matplotlib as mp
+import matplotlib.pyplot as plt
+import seaborn as sns
+from IPython.display import display, HTML
+import matplotlib.font_manager as fm
+
 import pandas as pd
 import numpy as np
 import re
@@ -348,3 +355,37 @@ class Amplicon(object):
         df['len_amplicon_aa_adj'] = df['len_amplicon_aa'] +3-9 # NGS is 3 less at N, 9 more at
 
         return df.copy(), track_filters
+
+    @staticmethod
+    def barplot_abundance(
+            df,
+            xlabel='strain id',
+            ylabel='occurrences',
+            title=None,
+            color='skyblue',
+            fontsize=12,
+            alpha=0.7,
+            rot=0,
+            figsize=(16,2),
+        ):
+        """
+        """
+
+        df = df.copy()
+        fg, ax = plt.subplots(figsize=figsize)
+        S_plot = df.groupby(['s#'])['count'].sum().rename('count').astype('int')
+        S_plot.plot(
+            kind='bar',
+            ax=ax,
+            xlabel=xlabel,
+            ylabel=ylabel,
+            title=title,
+            fontsize=fontsize,
+            color=color,
+            alpha=alpha,
+            rot=rot,
+        )
+        ax.set_xticks(ticks=np.arange(S_plot.shape[0]),
+                                        labels=S_plot.index.astype('int')
+                                    )
+        plt.show()
