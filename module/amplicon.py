@@ -190,3 +190,25 @@ class Amplicon(object):
             else:
             return -2
         return -3
+    
+    @staticmethod
+    def assign_nc(dfref):
+        """
+        """
+
+        dfref = dfref.copy()
+
+        dfref['N_seqpat'] = dfref['seq_aa'].apply(lambda x: x[26:34])
+        dfref['C_seqpat'] = dfref['seq_aa'].apply(lambda x: x[-16-8:-16+1])
+
+        Npat2link = dfref[['CpxA N-term linkage', 'N_seqpat']].drop_duplicates().set_index('N_seqpat').to_dict()['CpxA N-term linkage']
+        Cpat2link = dfref[['CpxA C-term linkage', 'C_seqpat']].drop_duplicates().set_index('C_seqpat').to_dict()['CpxA C-term linkage']
+        
+        dfref['NC_linkage'] = dfref[['N_seqpat', 'C_seqpat']].apply(lambda x: (x[0], x[1]), axis=1)
+
+        ls_N_terminus = dfref['N_seqpat'].unique()
+        ls_C_terminus = dfref['C_seqpat'].unique()
+        print('N\n', '\n'.join(list(ls_N_terminus)))
+        print('C\n', '\n'.join(list(ls_C_terminus)))
+
+        return dfref.copy()
