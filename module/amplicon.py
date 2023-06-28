@@ -47,9 +47,9 @@ class Amplicon(object):
                 search = re.search(f3, x)
                 if search:
                     ret['bracket3'] = f3
-                if search.span()[0] > ret['beg']:
-                    ret['seq'] = ret['seq'][:search.span()[1]+1]
-                    ret['end'] = search.span()[1]+1
+                    if search.span()[0] > ret['beg']:
+                        ret['seq'] = ret['seq'][:search.span()[1]+1]
+                        ret['end'] = search.span()[1]+1
                 if trunc3:
                     ret['seq'] = ret['seq'][:len(ret['seq'])-len(ret['seq'])%3] # clean the ends to end in triplicates
                     ret['end'] = len(ret['seq'])-len(ret['seq'])%3
@@ -314,7 +314,7 @@ class Amplicon(object):
 
         ret = Amplicon.get_df_amplicon_with_count(dfseq=ret_merged['seq'],
                                 primer_F5=primer_F5,
-                                primer_F3=primer_F3,
+                                primer_F3=primers_F3,
                                 )
         track_filters.extend(ret['filters'])
 
