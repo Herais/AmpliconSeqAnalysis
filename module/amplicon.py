@@ -212,3 +212,34 @@ class Amplicon(object):
         print('C\n', '\n'.join(list(ls_C_terminus)))
 
         return dfref.copy()
+
+    @staticmethod
+    def graph_abudance_bar(
+            df_seq,
+            primer_F5,
+            primer_F3,
+            ls_patN,
+            ls_patC,
+            orf_shift=1,
+        ):
+        """
+        """
+
+        df_L = df_seq[df_seq['sequence'].str.contains(primer_F5)]
+        df_LR = df_L[df_L['sequence'].str.contains(primer_F3)]
+        df_LR['amplicon'] = df_LR['sequence'].apply(lambda x: clean_ends(x, [primer_F5], [primer_F3])['seq'])
+        df_LRU = df_LR.groupby('amplicon')['count'].sum().rename('count').reset_index()
+        df_LRU['translated'] = df_LRU['amplicon'].apply(lambda x: str(Seq(x[orf_shift:len(x)-(len(x)-1)%3]).translate()))
+
+        df_LRU_nostar = df_LRU[~df_LRU['translated'].str.contains('\*')]
+
+        df_LRU_nostar_NC = df_LRU_nostar[df_LRU_nostar['translated'].apply(lambda x: match_by_brackets(x, ls_patN, ls_patC))]
+        df_LRU_nostar_NC['beg'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['beg'])
+        df_LRU_nostar_NC['end'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['end'])
+
+        df_LRU_nostar_NC['Nterm'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['bracket5'])
+        df_LRU_nostar_NC['Cterm'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['bracket3'])
+        df_LRU_nostar_NC['CpxA N-term linkage'] = df_LRU_nostar_NC['Nterm'].apply(lambda x: Npat2link[x])
+        df_LRU_nostar_NC['CpxA C-term linkage'] = df_LRU_nostar_NC['Cterm'].apply(lambda x: Cpat2link[x])
+
+        return df_LRU
