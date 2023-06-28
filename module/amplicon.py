@@ -7,6 +7,7 @@ from Bio.Align.Applications import ClustalwCommandline
 from Bio import motifs
 import pandas as pd
 import numpy as np
+import re
 
 
 class Amplicon(object):
@@ -65,9 +66,9 @@ class Amplicon(object):
         """
         for f5 in ls5:
             if re.search(f5, x):
-            for f3 in ls3:
-                if re.search(f3, x):
-                    return True
+                for f3 in ls3:
+                    if re.search(f3, x):
+                        return True
         return False
 
     @staticmethod
@@ -97,7 +98,7 @@ class Amplicon(object):
                     (dfseq['sequence'].str.contains(primer_F3))
                     ].copy()
         dfseq['amplicon'] = dfseq['sequence'].apply(
-        lambda x: clean_ends(x, [primer_F5], [primer_F3])['seq']).copy()
+        lambda x: Amplicon.clean_ends(x, [primer_F5], [primer_F3])['seq']).copy()
 
         dfseq = dfseq.groupby('amplicon')['count'].sum().rename('count').reset_index()
         dfseq = dfseq.sort_values('count', ascending=False)
@@ -182,7 +183,7 @@ class Amplicon(object):
         ret['stats'] += 'Input: # sequences {}, # unique {}\n'.format(
             filter2stats['n_input'], filter2stats['n_input_unique'])
 
-        df = df[df.amplicon_aa.apply(lambda x: match_by_brackets(x, ls_N_terminus, ls_C_terminus))]
+        df = df[df.amplicon_aa.apply(lambda x: Amplicon.match_by_brackets(x, ls_N_terminus, ls_C_terminus))]
         filter2stats['n_output'] = df['count'].sum()
         filter2stats['n_output_unique'] = df.shape[0]
         ret['stats'] += 'Output: # sequences {}, # unique {}\n'.format(
@@ -190,11 +191,11 @@ class Amplicon(object):
 
         ret['filters'].append(filter2stats)
 
-        df['beg'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['beg'])
-        df['end'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['end']).copy()
-        df['seq_aa_NtoC'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['seq'])
-        df['Nterm'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket5'])
-        df['Cterm'] = df['amplicon_aa'].apply(lambda x: clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket3'])
+        df['beg'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['beg'])
+        df['end'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['end']).copy()
+        df['seq_aa_NtoC'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['seq'])
+        df['Nterm'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket5'])
+        df['Cterm'] = df['amplicon_aa'].apply(lambda x: Amplicon.clean_ends(x, ls_N_terminus, ls_C_terminus)['bracket3'])
         df['CpxA N-term linkage'] = df['Nterm'].apply(lambda x: Npat2link[x])
         df['CpxA C-term linkage'] = df['Cterm'].apply(lambda x: Cpat2link[x])
 
@@ -270,6 +271,7 @@ class Amplicon(object):
             primer_F3,
             ls_patN,
             ls_patC,
+            dfref,
             orf_shift=1,
         ):
         """
@@ -277,19 +279,66 @@ class Amplicon(object):
 
         df_L = df_seq[df_seq['sequence'].str.contains(primer_F5)]
         df_LR = df_L[df_L['sequence'].str.contains(primer_F3)]
-        df_LR['amplicon'] = df_LR['sequence'].apply(lambda x: clean_ends(x, [primer_F5], [primer_F3])['seq'])
+        df_LR['amplicon'] = df_LR['sequence'].apply(lambda x: Amplicon.clean_ends(x, [primer_F5], [primer_F3])['seq'])
         df_LRU = df_LR.groupby('amplicon')['count'].sum().rename('count').reset_index()
         df_LRU['translated'] = df_LRU['amplicon'].apply(lambda x: str(Seq(x[orf_shift:len(x)-(len(x)-1)%3]).translate()))
 
         df_LRU_nostar = df_LRU[~df_LRU['translated'].str.contains('\*')]
 
-        df_LRU_nostar_NC = df_LRU_nostar[df_LRU_nostar['translated'].apply(lambda x: match_by_brackets(x, ls_patN, ls_patC))]
-        df_LRU_nostar_NC['beg'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['beg'])
-        df_LRU_nostar_NC['end'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['end'])
+        df_LRU_nostar_NC = df_LRU_nostar[df_LRU_nostar['translated'].apply(lambda x: Amplicon.match_by_brackets(x, ls_patN, ls_patC))]
+        df_LRU_nostar_NC['beg'] = df_LRU_nostar_NC['translated'].apply(lambda x: Amplicon.clean_ends(x, ls_patN, ls_patC)['beg'])
+        df_LRU_nostar_NC['end'] = df_LRU_nostar_NC['translated'].apply(lambda x: Amplicon.clean_ends(x, ls_patN, ls_patC)['end'])
 
-        df_LRU_nostar_NC['Nterm'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['bracket5'])
-        df_LRU_nostar_NC['Cterm'] = df_LRU_nostar_NC['translated'].apply(lambda x: clean_ends(x, ls_patN, ls_patC)['bracket3'])
+        dfref = Amplicon.assign_nc(dfref=dfref)
+        Npat2link = dfref[['CpxA N-term linkage', 'N_seqpat']].drop_duplicates().set_index('N_seqpat').to_dict()['CpxA N-term linkage']
+        Cpat2link = dfref[['CpxA C-term linkage', 'C_seqpat']].drop_duplicates().set_index('C_seqpat').to_dict()['CpxA C-term linkage']
+        
+        df_LRU_nostar_NC['Nterm'] = df_LRU_nostar_NC['translated'].apply(lambda x: Amplicon.clean_ends(x, ls_patN, ls_patC)['bracket5'])
+        df_LRU_nostar_NC['Cterm'] = df_LRU_nostar_NC['translated'].apply(lambda x: Amplicon.clean_ends(x, ls_patN, ls_patC)['bracket3'])
         df_LRU_nostar_NC['CpxA N-term linkage'] = df_LRU_nostar_NC['Nterm'].apply(lambda x: Npat2link[x])
         df_LRU_nostar_NC['CpxA C-term linkage'] = df_LRU_nostar_NC['Cterm'].apply(lambda x: Cpat2link[x])
 
         return df_LRU
+
+    @staticmethod
+    def process_merged_to_df(
+            ret_merged, 
+            dfref, 
+            primers_F5, 
+            primers_F3,
+        ):
+        """
+        """
+        track_filters = []
+        track_filters.extend(ret_merged['filters'])
+
+        ret = Amplicon.get_df_amplicon_with_count(dfseq=ret_merged['seq'],
+                                primer_F5=primers_F5,
+                                primer_F3=primers_F3,
+                                )
+        track_filters.extend(ret['filters'])
+
+        df = ret['df']
+        df['amplicon_aa'] = df['amplicon'].apply(lambda x: Amplicon.nt_to_aa(x, 1))
+
+        # narrow to sequences w/o stop codon
+        ret = Amplicon.drop_seq_with_stop_codon(df)
+        track_filters.extend(ret['filters'])
+        df = ret['df']
+
+        # narrow to sequences w/ defined NC terminus
+        ls_N_terminus = dfref['N_seqpat'].unique()
+        ls_C_terminus = dfref['C_seqpat'].unique()
+        ret = Amplicon.bracket_by_NC(df, ls_N_terminus, ls_C_terminus)
+        track_filters.extend(ret['filters'])
+        df = ret['df']
+
+        # assign s# identity
+        df['s#'] = df.apply(lambda x: Amplicon.assign_ref_id(x, dfref), axis=1)
+
+        # adjust NGS amplicon size to size in ref
+        df['len_amplicon_aa'] = df['amplicon_aa'].apply(len)
+        df['len_seq_aa_NtoC'] = df['seq_aa_NtoC'].apply(len)
+        df['len_amplicon_aa_adj'] = df['len_amplicon_aa'] +3-9 # NGS is 3 less at N, 9 more at
+
+        return df.copy()
