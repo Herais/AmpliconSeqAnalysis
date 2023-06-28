@@ -265,8 +265,8 @@ class Amplicon(object):
 
         ls_N_terminus = dfref['N_seqpat'].unique()
         ls_C_terminus = dfref['C_seqpat'].unique()
-        print('N\n', '\n'.join(list(ls_N_terminus)))
-        print('C\n', '\n'.join(list(ls_C_terminus)))
+        #print('N\n', '\n'.join(list(ls_N_terminus)))
+        #print('C\n', '\n'.join(list(ls_C_terminus)))
 
         return dfref.copy()
 
