@@ -335,7 +335,7 @@ class Amplicon(object):
         # narrow to sequences w/ defined NC terminus
         ls_N_terminus = dfref['N_seqpat'].unique()
         ls_C_terminus = dfref['C_seqpat'].unique()
-        ret = Amplicon.bracket_by_NC(df, ls_N_terminus, ls_C_terminus)
+        ret = Amplicon.bracket_by_NC(df, ls_N_terminus, ls_C_terminus, dfref)
         track_filters.extend(ret['filters'])
         df = ret['df']
 
