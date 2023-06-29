@@ -389,3 +389,64 @@ class Amplicon(object):
                                         labels=S_plot.index.astype('int')
                                     )
         plt.show()
+
+    @staticmethod
+    def generate_heatmap_matrix(df):
+        df = df.copy()
+
+        cols = ['CpxA C-term linkage', 'CpxA N-term linkage']
+        df_NC_crossed =  df.groupby(cols)['count'].sum().unstack()
+        cols_ordered = sorted(df_NC_crossed.columns.tolist(), key=lambda x: x[1:])
+        df_NC_crossed = df_NC_crossed[cols_ordered]
+        rows_ordered = sorted((df_NC_crossed.index), key=lambda x: x[1:])
+        df_NC_crossed = df_NC_crossed.reindex(rows_ordered)
+        df_NC_crossed.fillna(0, inplace=True)
+        df_NC_crossed = df_NC_crossed.astype('int')
+
+        df_NC_crossed_unique =  df.groupby(cols)['count'].count().unstack()
+        cols_ordered = sorted(df_NC_crossed_unique.columns.tolist(), key=lambda x: x[1:])
+        df_NC_crossed_unique = df_NC_crossed_unique[cols_ordered]
+        rows_ordered = sorted((df_NC_crossed_unique.index), key=lambda x: x[1:])
+        df_NC_crossed_unique = df_NC_crossed_unique.reindex(rows_ordered)
+        df_NC_crossed_unique.fillna(0, inplace=True)
+        df_NC_crossed_unique = df_NC_crossed_unique.astype('int')
+
+        df_NC_mut = df_NC_crossed_unique / df_NC_crossed
+
+        return df_NC_crossed, df_NC_crossed_unique, df_NC_mut
+    
+    @staticmethod
+    def heatmap_NC_abundance(
+            df,
+            title='Abundance N x C Linkages Lib',
+            figsize=(8,5),
+            cmap="GnBu",
+            alpha=0.7,
+            valfmt="{x:.0f}",
+            cbarlabel='count',
+            fontsize=16,
+        ):
+        """
+        """
+        df = df.copy()
+        fig, ax = plt.subplots(figsize=figsize,)
+        im, cbar = heatmap(
+            data=df,
+            row_labels=list(df.index),
+            col_labels=list(df.columns),
+            ax=ax,
+            cmap=cmap, #"YlGn"
+            alpha=alpha,
+            cbar_kw=None,
+            cbarlabel=cbarlabel,
+        )
+        texts = annotate_heatmap(
+            im,
+            valfmt=valfmt,
+        )
+        ax.set_title(title)
+        fig.tight_layout()
+
+        plt.grid(False)
+        plt.axis("on")
+        plt.show()
