@@ -12,7 +12,7 @@ import pickle
 
 
 
-DPATH_TOOLS = "/content/tools"
+DPATH_TOOLS = "/content/drive/MyDrive/CCSF/tools"
 DPATH_bowtie2 = f"{DPATH_TOOLS}/bowtie2-2.4.2-sra-linux-x86_64"
 DPATH_NGmerge=f"{DPATH_TOOLS}/NGmerge"
 DPATH_fastqjoin=f"{DPATH_TOOLS}/fastq-join"
