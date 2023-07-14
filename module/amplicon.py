@@ -371,6 +371,7 @@ class Amplicon(object):
         toprint += 'Output: # sequences {}, # unique {}\n'.format(
             filter['n_input'], filter['n_input_unique'])
         track_filters.extend([filter])
+        print(toprint)
 
 
         # narrow to sequences w/o stop codon
