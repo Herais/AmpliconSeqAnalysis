@@ -354,15 +354,23 @@ class Amplicon(object):
         S_aa = df.apply(lambda x: Amplicon.nt_to_aa_3orf(x, ls_sensor_pat), axis=1)
         df['amplicon_aa'] = S_aa
 
+        
+
+
         filter = {}
         filter['description'] = 'amplicon_orf'
         filter['n_input'] = df['count'].sum()
         filter['n_input_unique'] = df.shape[0]
+        toprint = 'amplicon_orf -> Drop Sequences w/o 5wlk sensor domain\n'
+        toprint += 'Input: # sequences {}, # unique {}\n'.format(
+                    filter['n_input'], filter['n_input_unique'])
 
         df = df[~df['amplicon_aa'].isna()]
         filter['n_output'] = df['count'].sum()
         filter['n_output_unique'] = df.shape[0]
-        track_filters.append(filter)
+        toprint += 'Output: # sequences {}, # unique {}\n'.format(
+            filter['n_input'], filter['n_input_unique'])
+        track_filters.extend([filter])
 
 
         # narrow to sequences w/o stop codon
