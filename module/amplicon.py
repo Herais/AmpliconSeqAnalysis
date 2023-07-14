@@ -72,7 +72,7 @@ class Amplicon(object):
         """
         """
         for f5 in ls5:
-            if re.search(f5, x):
+            if re.search(f5, x)
                 for f3 in ls3:
                     if re.search(f3, x):
                         return True
@@ -136,6 +136,21 @@ class Amplicon(object):
         aa = Seq(seq_to_translate).translate()
 
         return str(aa)
+    @staticmethod
+    def nt_to_aa_3orf(row, ls_pat):
+        for pat in ls_pat:
+            m = re.search(pat, row['amplicon_aa_0'])
+            if m: 
+                return  row['amplicon_aa_0']
+
+            m = re.search(pat, row['amplicon_aa_1'])
+            if m: 
+            return  row['amplicon_aa_1']
+
+            m = re.search(pat, row['amplicon_aa_2'])
+            if m: 
+            return row['amplicon_aa_2']
+        return np.NAN
     
     @staticmethod
     def drop_seq_with_stop_codon(dfseq):
@@ -314,17 +329,61 @@ class Amplicon(object):
         return df_LRU
 
     @staticmethod
-    def process_merged_to_df(
+    def Pipeline_001(
             ret_merged, 
             dfref, 
             primer_F5, 
             primer_F3,
+            ls_sensor_pat,
         ):
         """
         """
         track_filters = []
         track_filters.extend(ret_merged['filters'])
 
+        ret = Amplicon.get_df_amplicon_with_count(dfseq=name2ret['AKH089']['seq'],
+                                primer_F5=primer_F5,
+                                primer_F3=primer_F3,
+                                )
+        track_filters.extend(ret['filters'])
+
+        df = ret['df']
+        df['amplicon_aa_0'] = df['amplicon'].apply(lambda x: Amplicon.nt_to_aa(x,0))
+        df['amplicon_aa_1'] = df['amplicon'].apply(lambda x: Amplicon.nt_to_aa(x,1))
+        df['amplicon_aa_2'] = df['amplicon'].apply(lambda x: Amplicon.nt_to_aa(x,2))
+        S_aa = df.apply(lambda x: Amplicon.nt_to_aa_3orf(x, ls_sensor_pat), axis=1)
+        df['amplicon_aa'] = S_aa
+
+        filter = {}
+        filter['description'] = 'amplicon_orf'
+        filter['n_input'] = df['count'].sum()
+        filter['n_input_unique'] = df.shape[0]
+
+        df = df[~df['amplicon_aa'].isna()]
+        filter['n_output'] = df['count'].sum()
+        filter['n_output_unique'] = df.shape[0]
+        track_filters.append(filter)
+
+
+        # narrow to sequences w/o stop codon
+        ret = Amplicon.drop_seq_with_stop_codon(df)
+        track_filters.extend(ret['filters'])
+        df = ret['df']
+
+        # narrow to sequences w/ defined NC terminus
+        ls_N_terminus = dfref['N_seqpat'].unique()
+        ls_C_terminus = dfref['C_seqpat'].unique()
+        ret = Amplicon.bracket_by_NC(df, ls_N_terminus, ls_C_terminus, dfref)
+        track_filters.extend(ret['filters'])
+        df = ret['df']
+
+        # assign s# identity
+        df['s#'] = df.apply(lambda x: Amplicon.assign_ref_id(x, dfref), axis=1)
+
+        # adjust NGS amplicon size to size in ref
+        df['len_amplicon_aa'] = df['amplicon_aa'].apply(len)
+        df['len_seq_aa_NtoC'] = df['seq_aa_NtoC'].apply(len)
+        df['len_amplicon_aa_adj'] = df['len_amplicon_aa'] +3-9 # NGS is 3 less at N, 9 more at
 
         return df.copy(), track_filters
 
