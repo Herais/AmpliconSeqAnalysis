@@ -325,34 +325,6 @@ class Amplicon(object):
         track_filters = []
         track_filters.extend(ret_merged['filters'])
 
-        ret = Amplicon.get_df_amplicon_with_count(dfseq=ret_merged['seq'],
-                                primer_F5=primer_F5,
-                                primer_F3=primer_F3,
-                                )
-        track_filters.extend(ret['filters'])
-
-        df = ret['df']
-        df['amplicon_aa'] = df['amplicon'].apply(lambda x: Amplicon.nt_to_aa(x, 1))
-
-        # narrow to sequences w/o stop codon
-        ret = Amplicon.drop_seq_with_stop_codon(df)
-        track_filters.extend(ret['filters'])
-        df = ret['df']
-
-        # narrow to sequences w/ defined NC terminus
-        ls_N_terminus = dfref['N_seqpat'].unique()
-        ls_C_terminus = dfref['C_seqpat'].unique()
-        ret = Amplicon.bracket_by_NC(df, ls_N_terminus, ls_C_terminus, dfref)
-        track_filters.extend(ret['filters'])
-        df = ret['df']
-
-        # assign s# identity
-        df['s#'] = df.apply(lambda x: Amplicon.assign_ref_id(x, dfref), axis=1)
-
-        # adjust NGS amplicon size to size in ref
-        df['len_amplicon_aa'] = df['amplicon_aa'].apply(len)
-        df['len_seq_aa_NtoC'] = df['seq_aa_NtoC'].apply(len)
-        df['len_amplicon_aa_adj'] = df['len_amplicon_aa'] +3-9 # NGS is 3 less at N, 9 more at
 
         return df.copy(), track_filters
 
