@@ -341,7 +341,7 @@ class Amplicon(object):
         track_filters = []
         track_filters.extend(ret_merged['filters'])
 
-        ret = Amplicon.get_df_amplicon_with_count(dfseq=name2ret['AKH089']['seq'],
+        ret = Amplicon.get_df_amplicon_with_count(dfseq=ret_merged['seq'],
                                 primer_F5=primer_F5,
                                 primer_F3=primer_F3,
                                 )
@@ -400,7 +400,7 @@ class Amplicon(object):
         track_filters = []
         track_filters.extend(ret_merged['filters'])
 
-        ret = Amplicon.get_df_amplicon_with_count(dfseq=name2ret['AKH089']['seq'],
+        ret = Amplicon.get_df_amplicon_with_count(dfseq=ret_merged['seq'],
                                 primer_F5=primer_F5,
                                 primer_F3=primer_F3,
                                 )
