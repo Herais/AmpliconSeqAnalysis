@@ -369,7 +369,7 @@ class Amplicon(object):
         filter['n_output'] = df['count'].sum()
         filter['n_output_unique'] = df.shape[0]
         toprint += 'Output: # sequences {}, # unique {}\n'.format(
-            filter['n_input'], filter['n_input_unique'])
+            filter['n_ourput'], filter['n_output_unique'])
         track_filters.extend([filter])
         print(toprint)
 
